@@ -3,27 +3,43 @@ import telebot
 from keys import alphabet, letter_map
 from os import environ
 
-bot = telebot.TeleBot(environ['TOKEN'])
+bot = telebot.TeleBot(environ['TG_TOKEN'])
 
 
 def cities(message: str):  # функция игры в города
     # Получаем последнюю букву сообщения
-    last = message[-1].lower()
+    last = message[len(message)-1].lower()
     # Получаем предпоследнюю букву, если длина сообщения больше 1
-    lalast = message[-2].lower() if last == 'ь' or last == 'ъ' or last == "ы" else None
+    #lalast = message[len(message)-2].lower() if last == 'ь' or last == 'ъ' or last == "ы" else None
 
     # Проверяем, есть ли последняя буква в словаре
-    if letter_map[last] > 0:
-        num_of_bukv = list(letter_map.keys()).index(last) + 1
-        rand = random.randint(0, letter_map[last] - 1)  # Генерируем случайный индекс города
-    elif letter_map[lalast] > 0:
-        num_of_bukv = list(letter_map.keys()).index(lalast) + 1
-        rand = random.randint(0, letter_map[lalast] - 1)
-    else:
-        return "Не могу подобрать город на эту букву."
+    lalast = last
+    x = 1
+
+    while True:
+        if letter_map[lalast] == 0:
+            lalast = message[len(message) - x].lower()
+
+           # num_of_bukv = list(letter_map.keys()).index(lalast) + 1
+           # print(num_of_bukv)
+            #rand = random.randint(0, letter_map[lalast])
+            x += 1
+            continue
+        elif letter_map[lalast] > 0:
+            num_of_bukv = list(letter_map.keys()).index(lalast) + 1
+            print(num_of_bukv)
+            rand = random.randint(0, letter_map[lalast])  # Генерируем случайный индекс города
+            break
+        #elif letter_map[lalast] > 0:
+         #   num_of_bukv = list(letter_map.keys()).index(lalast) + 1
+         #  print(num_of_bukv)
+        #  rand = random.randint(0, letter_map[lalast])
+        else:
+            return "Не могу подобрать город на эту букву."
 
     # Получаем название города из списка `alphabet` по индексу
-    computer_ans = alphabet[num_of_bukv - 1][rand - 1]
+    computer_ans = alphabet[num_of_bukv][rand - 1]
+    lalast = ''
     return computer_ans
 
 
@@ -94,4 +110,5 @@ def play_numbers(message, user_num: int):
         curr_game = ""
 
 
-bot.polling(none_stop=True)
+print("Успешный запуск прослушивания бота")
+bot.infinity_polling()
