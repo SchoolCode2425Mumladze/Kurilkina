@@ -7,6 +7,7 @@ bot = telebot.TeleBot(environ['TG_TOKEN'])
 timer = 0
 last_bot = ''
 def FindNumbersOfBukvs():
+    global last_bot
     last_bot_num = bukvs_numb.get(last_bot)
     return last_bot_num
 
@@ -19,9 +20,7 @@ def cities(message: str):  # функция игры в города
 
             # Получаем последнюю букву сообщения
             last = message[len(message) - 1].lower()
-            #if message in alphabet[lalast_num]:
-            # Получаем предпоследнюю букву, если длина сообщения больше 1
-            #lalast = message[len(message)-2].lower() if last == 'ь' or last == 'ъ' or last == "ы" else None
+
 
             # Проверяем, есть ли последняя буква в словаре
             lalast = last
@@ -32,9 +31,7 @@ def cities(message: str):  # функция игры в города
                 if letter_map[lalast] == 0:
                     lalast = message[len(message) - x].lower()
 
-                # num_of_bukv = list(letter_map.keys()).index(lalast) + 1
-                # print(num_of_bukv)
-                    #rand = random.randint(0, letter_map[lalast])
+
                     x += 1
                     continue
                 elif letter_map[lalast] > 0:
@@ -42,10 +39,7 @@ def cities(message: str):  # функция игры в города
                     print(num_of_bukv)
                     rand = random.randint(0, letter_map[lalast])  # Генерируем случайный индекс города
                     break
-                #elif letter_map[lalast] > 0:
-                #   num_of_bukv = list(letter_map.keys()).index(lalast) + 1
-                #  print(num_of_bukv)
-                #  rand = random.randint(0, letter_map[lalast])
+
 
                 else:
                     return "Не могу подобрать город на эту букву."
@@ -59,6 +53,7 @@ def cities(message: str):  # функция игры в города
     else:
         computer_ans = "Такого города не существует в России"
     last_bot = computer_ans[len(computer_ans) - 1]
+
     return computer_ans
 
 def numbers(user_num: int, rand_num: int):  # функция игры в угадай число
