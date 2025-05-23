@@ -1,65 +1,31 @@
 import random
 import telebot
-from keys import alphabet, letter_map, bukvs_numb
+from keys import alphabet, letter_map
 from os import environ
 
 bot = telebot.TeleBot(environ['TG_TOKEN'])
-timer = 0
-last_bot = ''
-def FindNumbersOfBukvs():
-    last_bot_num = bukvs_numb.get(last_bot)
-    return last_bot_num
+
 
 def cities(message: str):  # функция игры в города
-    global last_bot
-    global timer
-    if last_bot != '' or timer == 0:
-        num_of_last_bot = FindNumbersOfBukvs()
-        if message in alphabet[num_of_last_bot]:
+    # Получаем последнюю букву сообщения
+    last = message[len(message)-1].lower()
+    # Получаем предпоследнюю букву, если длина сообщения больше 1
+    lalast = message[len(message)-2].lower() if last == 'ь' or last == 'ъ' or last == "ы" else None
 
-            # Получаем последнюю букву сообщения
-            last = message[len(message) - 1].lower()
-            #if message in alphabet[lalast_num]:
-            # Получаем предпоследнюю букву, если длина сообщения больше 1
-            #lalast = message[len(message)-2].lower() if last == 'ь' or last == 'ъ' or last == "ы" else None
-
-            # Проверяем, есть ли последняя буква в словаре
-            lalast = last
-            x = 1
-
-            while True:
-
-                if letter_map[lalast] == 0:
-                    lalast = message[len(message) - x].lower()
-
-                # num_of_bukv = list(letter_map.keys()).index(lalast) + 1
-                # print(num_of_bukv)
-                    #rand = random.randint(0, letter_map[lalast])
-                    x += 1
-                    continue
-                elif letter_map[lalast] > 0:
-                    num_of_bukv = list(letter_map.keys()).index(lalast) + 1
-                    print(num_of_bukv)
-                    rand = random.randint(0, letter_map[lalast])  # Генерируем случайный индекс города
-                    break
-                #elif letter_map[lalast] > 0:
-                #   num_of_bukv = list(letter_map.keys()).index(lalast) + 1
-                #  print(num_of_bukv)
-                #  rand = random.randint(0, letter_map[lalast])
-
-                else:
-                    return "Не могу подобрать город на эту букву."
-
-            # Получаем название города из списка `alphabet` по индексу
-            computer_ans = alphabet[num_of_bukv][rand - 1]
-            lalast = ''
-
-
-
+    # Проверяем, есть ли последняя буква в словаре
+    if letter_map[last] > 0:
+        num_of_bukv = list(letter_map.keys()).index(last) + 1
+        rand = random.randint(0, letter_map[last] - 1)  # Генерируем случайный индекс города
+    elif letter_map[lalast] > 0:
+        num_of_bukv = list(letter_map.keys()).index(lalast) + 1
+        rand = random.randint(0, letter_map[lalast] - 1)
     else:
-        computer_ans = "Такого города не существует в России"
-    last_bot = computer_ans[len(computer_ans) - 1]
+        return "Не могу подобрать город на эту букву."
+
+    # Получаем название города из списка `alphabet` по индексу
+    computer_ans = alphabet[num_of_bukv - 1][rand - 1]
     return computer_ans
+
 
 def numbers(user_num: int, rand_num: int):  # функция игры в угадай число
     res_num = ''
@@ -73,9 +39,7 @@ def numbers(user_num: int, rand_num: int):  # функция игры в уга�
 
 
 @bot.message_handler(commands=['start'])
-
 def main(message):
-    print("user.start")
     bot.send_message(
         message.chat.id,
         f'Привет, {message.from_user.first_name}{' '+message.from_user.last_name if message.from_user.last_name is not None else ''}!\n'
@@ -117,9 +81,7 @@ def info(message):
 
 
 def play_cities(message):
-    global timer
     user_city = message.text
-    timer += 1
     bot.send_message(message.chat.id, cities(user_city))
 
 
